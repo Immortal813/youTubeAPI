@@ -13,8 +13,9 @@
 #include <qmenu.h>
 //#include <QtGui/qevent.h>
 #include <qevent.h>
-
+#include <qmessagebox.h>
 #include <qfiledialog.h>
+#include <qdesktopservices.h>
 
 
 class youTubeAPI : public QMainWindow
@@ -71,6 +72,7 @@ private:
 	//QString id_video_string;
 	QString search;
 	QPixmap pic_save;
+	QString url_id_video;
 
 protected:
 	void mousePressEvent( QMouseEvent *event ) override;
@@ -78,7 +80,7 @@ protected:
 
 private slots:
 
-	void test_save();
+	void save_pic_slot ( );
 	void search_sl();
 	void click_on_list( int );
 	//void click_on_list( QListWidgetItem * );

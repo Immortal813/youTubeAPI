@@ -22,26 +22,35 @@ youTubeAPI::youTubeAPI( QWidget *parent )
 
 }
 
-void youTubeAPI::test_save() {
+void youTubeAPI::save_pic_slot() {
 
 	//QString filePath = QFileDialog::getSaveFileName( this, "Save Pic", "", tr("Images (*.png, *.jpg"));
 	QString filePath = QFileDialog::getSaveFileName( this, "Save Pic", "", "Images( *.png *.jpg )" );
+	QMessageBox msgBox;
 
 	if ( !filePath.isEmpty() ) {
 
 		if ( pic_save.save( filePath ) ) {
 
-			qDebug() << "SAVE COMPLETE!";
-
+			//qDebug() << "SAVE COMPLETE!";
+			//msgBox.warning()
+			//msgBox.setText( "Save pic complete!" );
+			msgBox.warning( this, "YouTubeAPI", "SAVE COMPLETE" );
+		}
+		else {
+			//qDebug() << "IMG SAVE ERROR!";
+			msgBox.warning( this, "YouTubeAPI", "Save pic Error" );
+			//msgBox.setText( "Save pic error!" );
 
 		}
-		else
-			qDebug() << "IMG SAVE ERROR!";
-
 	}
-	else
-		qDebug() << "TEST_SAVE ERROR!";
+	else {
+		//qDebug() << "TEST_SAVE ERROR!";
+		msgBox.warning( this, "YouTubeAPI", "Path is not fount or window was close" );
+		//msgBox.setText( "Path is not fount or window was close" );
+	}
 
+	//msgBox.exec();
 	qDebug() << "TEST";
 
 }
@@ -59,11 +68,27 @@ void youTubeAPI::mousePressEvent( QMouseEvent *event ) {
 			//menu.addAction( "Act" );
 			QAction *newAct = new QAction( "Save", this );
 			menu.addAction( newAct );
-			connect( newAct, &QAction::triggered, this, &youTubeAPI::test_save );
+			connect( newAct, &QAction::triggered, this, &youTubeAPI::save_pic_slot );
 			menu.exec( mapToGlobal( event->pos() ) );
 
 		}
 
+	}
+
+	if ( event->button() == Qt::LeftButton ) {
+	
+		QPoint pos = event->pos();
+
+		if ( ui.sear_label->geometry().contains( pos ) ) {
+
+			//https://www.youtube.com/watch?v=
+			//QDesktopServices::openUrl( QUrl( "https://qt.io" ) );
+			QDesktopServices::openUrl( QUrl( QString("https://www.youtube.com/watch?v=%1").arg(url_id_video)));
+
+
+		}
+
+	
 	}
 
 
@@ -90,8 +115,7 @@ void youTubeAPI::create_video_list() {
 		QString str = name_video_list[ i ] + " View Count: " + stat_video_list[ i ];
 		//wid_item->setText( name_video_list[ i ] );
 		wid_item->setText( str );
-		//ѕочему-то выводит 256 на 1 и 3 айтеме, найти решение
-		//wid_item->setData( i, Qt::UserRole + 1 );
+
 		ui.listWidget->addItem( wid_item );
 
 
@@ -255,7 +279,8 @@ void youTubeAPI::get_video_view() {
 	}
 	//ERROR
 	else
-		qDebug() << "ERROR IN GET_VIDEO_VIEW" << reply->errorString();
+		QMessageBox::critical( this, "Error in get_video_data", reply->errorString() );
+		//qDebug() << "ERROR IN GET_VIDEO_VIEW" << reply->errorString();
 
 
 	qDebug() << "END GET VIDEO VIEW!";
@@ -302,7 +327,8 @@ void youTubeAPI::get_video_data()
 
 	}
 	else
-		qDebug() << "ERROR IN GET_VIDEO_DATA: " << reply->errorString();
+		QMessageBox::critical( this, "Error in get_video_data", reply->errorString() );
+		//qDebug() << "ERROR IN GET_VIDEO_DATA: " << reply->errorString();
 
 
 
@@ -335,7 +361,7 @@ void youTubeAPI::click_on_list( int item ) {
 		QBuffer *data_pic = new QBuffer( this );
 		data_pic->setData( get_pic( pic_video_list[ item ] )->buffer() );
 		QPixmap img;
-
+		url_id_video = id_video_list[ item ];
 		img.loadFromData( data_pic->buffer() );
 		pic_save = img;
 		ui.sear_label->setPixmap( img );
